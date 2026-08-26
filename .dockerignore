@@ -1,3 +1,8 @@
+# Git / GitHub
+.git/
+.github/
+.gitignore
+
 # Python
 __pycache__/
 *.py[cod]
@@ -7,10 +12,13 @@ venv/
 env/
 .ruff_cache/
 
-# Streamlit
-.streamlit/secrets.toml
+# Docs / assets (não são necessários dentro da imagem)
+docs/
+README.md
+LICENSE
+ruff.toml
 
-# Arquivos de teste / uso local
+# Arquivos de teste locais
 *.pdf
 !docs/**/*.pdf
 
@@ -19,6 +27,3 @@ env/
 Thumbs.db
 .vscode/
 .idea/
-.zip
-.txt
-.old

@@ -1,0 +1,13 @@
+line-length = 100
+target-version = "py310"
+
+[lint]
+select = [
+    "E",   # pycodestyle (erros)
+    "F",   # pyflakes
+    "W",   # pycodestyle (avisos)
+    "I",   # isort (ordenação de imports)
+]
+ignore = [
+    "E501",  # linha longa (Streamlit costuma ter strings de UI extensas)
+]

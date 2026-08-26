@@ -1,0 +1,10 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ícone do PDFlow">
+  <title>PDFlow</title>
+  <rect width="128" height="128" rx="24" fill="#1B2A4A"/>
+  <path d="M34,20 L86,20 L100,34 L100,102 Q100,108 94,108 L34,108 Q28,108 28,102 L28,26 Q28,20 34,20 Z" fill="#FBF8F3"/>
+  <polygon points="86,20 100,34 86,34" fill="#D97757"/>
+  <rect x="40" y="42" width="36" height="6" rx="3" fill="#D9D4C7"/>
+  <rect x="40" y="54" width="24" height="6" rx="3" fill="#D9D4C7"/>
+  <circle cx="64" cy="80" r="9" fill="#1B2A4A"/>
+  <rect x="60" y="80" width="8" height="18" rx="3" fill="#1B2A4A"/>
+</svg>

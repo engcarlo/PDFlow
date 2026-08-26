@@ -1,18 +1,24 @@
 import io
 import zipfile
+from pathlib import Path
 
 import streamlit as st
 from pypdf import PdfReader, PdfWriter
 from pypdf.errors import FileNotDecryptedError
 
+ICON_PATH = Path(__file__).parent / "assets" / "icon.png"
+
 st.set_page_config(
-    page_title="PDF Toolkit",
-    page_icon="🧰",
+    page_title="PDFlow",
+    page_icon=str(ICON_PATH) if ICON_PATH.exists() else "🗂️",
     layout="centered",
 )
 
 # --- Navegação lateral ----------------------------------------------------
-st.sidebar.title("🧰 PDF Toolkit")
+if ICON_PATH.exists():
+    st.sidebar.image(str(ICON_PATH), width=64)
+st.sidebar.title("PDFlow")
+st.sidebar.caption("Ferramentas para desbloquear, juntar e dividir PDFs.")
 pagina = st.sidebar.radio(
     "Funcionalidade",
     ["🔓 Desbloquear", "📎 Juntar", "✂️ Dividir"],
@@ -163,50 +169,154 @@ elif pagina == "📎 Juntar":
 # ===========================================================================
 elif pagina == "✂️ Dividir":
     st.title("✂️ Dividir PDF")
-    st.write("Envie um PDF e baixe cada página como um arquivo separado, dentro de um .zip.")
+    st.write("Envie um PDF e escolha como deseja dividi-lo.")
 
     st.divider()
 
     arquivo = st.file_uploader("Arquivo PDF para dividir", type=["pdf"])
 
+    total_paginas = None
+    if arquivo is not None:
+        try:
+            reader_preview = PdfReader(arquivo)
+            total_paginas = len(reader_preview.pages)
+            st.caption(f"O arquivo enviado tem **{total_paginas}** página(s).")
+        except Exception as e:
+            st.error(f"Não foi possível ler o PDF: {e}")
+
+    modo = st.radio(
+        "Modo de divisão",
+        [
+            "Todas as páginas (uma por arquivo)",
+            "Um único intervalo",
+            "Múltiplos intervalos personalizados",
+        ],
+    )
+
+    intervalo_unico = None
+    intervalos_texto = ""
+
+    if modo == "Um único intervalo" and total_paginas:
+        col1, col2 = st.columns(2)
+        with col1:
+            pagina_inicio = st.number_input(
+                "Página inicial", min_value=1, max_value=total_paginas, value=1
+            )
+        with col2:
+            pagina_fim = st.number_input(
+                "Página final", min_value=1, max_value=total_paginas, value=total_paginas
+            )
+        intervalo_unico = (pagina_inicio, pagina_fim)
+
+    elif modo == "Múltiplos intervalos personalizados":
+        intervalos_texto = st.text_input(
+            "Intervalos (separados por vírgula)",
+            placeholder="Ex: 1-3, 5, 8-10",
+            help="Cada intervalo ou página avulsa vira um arquivo PDF separado dentro do .zip.",
+        )
+        st.caption("Use páginas avulsas (ex: `5`) ou faixas (ex: `8-10`), separadas por vírgula.")
+
+    st.divider()
+
+    def _parse_intervalos(texto, total):
+        """Converte uma string como '1-3, 5, 8-10' em uma lista de tuplas (inicio, fim), 1-indexado."""
+        intervalos = []
+        partes = [p.strip() for p in texto.split(",") if p.strip()]
+
+        if not partes:
+            raise ValueError("Nenhum intervalo foi informado.")
+
+        for parte in partes:
+            if "-" in parte:
+                inicio_str, fim_str = parte.split("-", 1)
+                inicio, fim = int(inicio_str.strip()), int(fim_str.strip())
+            else:
+                inicio = fim = int(parte.strip())
+
+            if inicio < 1 or fim < 1 or inicio > total or fim > total:
+                raise ValueError(f"O intervalo '{parte}' está fora do intervalo válido (1-{total}).")
+            if inicio > fim:
+                raise ValueError(f"O intervalo '{parte}' é inválido (início maior que o fim).")
+
+            intervalos.append((inicio, fim))
+
+        return intervalos
+
     dividir = st.button(
         "Dividir PDF", type="primary", use_container_width=True, disabled=arquivo is None
     )
-
-    st.divider()
 
     if dividir:
         if arquivo is None:
             st.warning("Envie um arquivo PDF antes de continuar.")
         else:
             try:
+                arquivo.seek(0)
                 reader = PdfReader(arquivo)
+                total = len(reader.pages)
                 nome_base = arquivo.name.replace(".pdf", "")
 
-                buffer_zip = io.BytesIO()
-                with zipfile.ZipFile(buffer_zip, "w", zipfile.ZIP_DEFLATED) as zip_file:
-                    for index, page in enumerate(reader.pages):
-                        writer = PdfWriter()
-                        writer.add_page(page)
+                # --- Define os intervalos a extrair, conforme o modo escolhido ---
+                if modo == "Todas as páginas (uma por arquivo)":
+                    intervalos = [(i + 1, i + 1) for i in range(total)]
 
-                        buffer_pagina = io.BytesIO()
-                        writer.write(buffer_pagina)
-                        buffer_pagina.seek(0)
+                elif modo == "Um único intervalo":
+                    intervalos = [intervalo_unico]
 
-                        nome_pagina = f"{nome_base}_page_{index + 1}.pdf"
-                        zip_file.writestr(nome_pagina, buffer_pagina.read())
+                else:  # Múltiplos intervalos personalizados
+                    intervalos = _parse_intervalos(intervalos_texto, total)
 
-                buffer_zip.seek(0)
+                # --- Caso especial: um único resultado -> baixa direto o PDF, sem zip ---
+                if len(intervalos) == 1:
+                    inicio, fim = intervalos[0]
+                    writer = PdfWriter()
+                    for p in range(inicio - 1, fim):
+                        writer.add_page(reader.pages[p])
 
-                st.success(f"{len(reader.pages)} páginas geradas com sucesso!")
+                    buffer_saida = io.BytesIO()
+                    writer.write(buffer_saida)
+                    buffer_saida.seek(0)
 
-                st.download_button(
-                    label="⬇️ Baixar páginas (.zip)",
-                    data=buffer_zip,
-                    file_name=f"{nome_base}_paginas.zip",
-                    mime="application/zip",
-                    use_container_width=True,
-                )
+                    sufixo = f"p{inicio}" if inicio == fim else f"p{inicio}-{fim}"
+                    st.success(f"PDF gerado com sucesso! ({fim - inicio + 1} página(s))")
 
+                    st.download_button(
+                        label="⬇️ Baixar PDF",
+                        data=buffer_saida,
+                        file_name=f"{nome_base}_{sufixo}.pdf",
+                        mime="application/pdf",
+                        use_container_width=True,
+                    )
+
+                # --- Múltiplos resultados -> empacota em um .zip ---
+                else:
+                    buffer_zip = io.BytesIO()
+                    with zipfile.ZipFile(buffer_zip, "w", zipfile.ZIP_DEFLATED) as zip_file:
+                        for inicio, fim in intervalos:
+                            writer = PdfWriter()
+                            for p in range(inicio - 1, fim):
+                                writer.add_page(reader.pages[p])
+
+                            buffer_pagina = io.BytesIO()
+                            writer.write(buffer_pagina)
+                            buffer_pagina.seek(0)
+
+                            sufixo = f"page_{inicio}" if inicio == fim else f"pages_{inicio}-{fim}"
+                            zip_file.writestr(f"{nome_base}_{sufixo}.pdf", buffer_pagina.read())
+
+                    buffer_zip.seek(0)
+
+                    st.success(f"{len(intervalos)} arquivo(s) gerado(s) com sucesso!")
+
+                    st.download_button(
+                        label="⬇️ Baixar arquivos (.zip)",
+                        data=buffer_zip,
+                        file_name=f"{nome_base}_dividido.zip",
+                        mime="application/zip",
+                        use_container_width=True,
+                    )
+
+            except ValueError as e:
+                st.error(str(e))
             except Exception as e:
                 st.error(f"Ocorreu um erro ao dividir o PDF: {e}")
