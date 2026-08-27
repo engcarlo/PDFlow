@@ -119,12 +119,9 @@ docker run -p 8501:8501 --name pdflow pdflow
 
 ## 🌐 Deploy
 
-Este app pode ser publicado gratuitamente no [Streamlit Community Cloud](https://streamlit.io/cloud):
+O PDFlow já está disponível online no [Streamlit Community Cloud](https://pdflow.streamlit.app/).
 
-1. Faça fork ou suba este repositório na sua conta do GitHub
-2. Acesse [share.streamlit.io](https://share.streamlit.io) e conecte sua conta
-3. Aponte para o repositório e o arquivo `app.py`
-4. Pronto — o app estará no ar com uma URL pública
+Acesse [pdflow.streamlit.app](https://pdflow.streamlit.app/) para desbloquear, juntar e dividir arquivos PDF diretamente no navegador, com processamento em memória.
 
 ## 📁 Estrutura do projeto
 
