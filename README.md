@@ -61,7 +61,7 @@ Todo o processamento acontece em memória, na sessão do navegador — nenhum ar
 
 ```bash
 # Clone o repositório
-git clone https://github.com/SEU-USUARIO/pdflow.git
+git clone https://github.com/engcarlo/pdflow.git
 cd pdflow
 
 # Crie um ambiente virtual (recomendado)
@@ -117,6 +117,21 @@ docker run -p 8501:8501 --name pdflow pdflow
 - Possui healthcheck integrado, verificando `http://localhost:8501/_stcore/health`
 - Cache de camadas otimizado: dependências são instaladas antes de copiar o código, então alterações no `app.py` não forçam reinstalação dos pacotes
 
+## 📦 Publicação automática no Docker Hub
+
+Este repositório inclui um workflow ([`.github/workflows/docker-publish.yml`](.github/workflows/docker-publish.yml)) que builda e publica a imagem no Docker Hub automaticamente a cada push na `main`.
+
+Para ativar no seu fork/repositório:
+
+1. Crie um repositório em [hub.docker.com](https://hub.docker.com) (ex: `SEU-USUARIO/pdflow`)
+2. Gere um **Access Token**: Docker Hub → *Account Settings* → *Security* → *New Access Token*
+3. No GitHub, vá em *Settings* → *Secrets and variables* → *Actions* e adicione:
+   - `DOCKERHUB_USERNAME` — seu usuário do Docker Hub
+   - `DOCKERHUB_TOKEN` — o token gerado no passo anterior
+4. Faça um push na `main` (ou rode manualmente pela aba *Actions* → *Publish Docker image* → *Run workflow*)
+
+A cada execução, a imagem é publicada com duas tags: `latest` e o hash do commit (`github.sha`), o que facilita rastrear qual versão do código está em cada imagem publicada.
+
 ## 🌐 Deploy
 
 O PDFlow já está disponível online no [Streamlit Community Cloud](https://pdflow.streamlit.app/).
@@ -143,7 +158,8 @@ pdflow/
 │   └── config.toml         # Tema visual do app
 ├── .github/
 │   └── workflows/
-│       └── ci.yml          # Pipeline de CI (lint + verificação de build)
+│       ├── ci.yml               # Pipeline de CI (lint + verificação de build)
+│       └── docker-publish.yml   # Build e push automático da imagem no Docker Hub
 ├── docs/
 │   └── screenshots/        # Prints/GIFs de demonstração
 ├── LICENSE
@@ -168,7 +184,7 @@ O workflow está em [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 - [ ] Rotação de páginas
 - [ ] Compressão de PDF
 - [ ] Testes automatizados (pytest)
-- [ ] Publicar imagem no Docker Hub / GitHub Container Registry
+- [x] Publicar imagem no Docker Hub / GitHub Container Registry
 
 ## 🤝 Contribuindo
 
