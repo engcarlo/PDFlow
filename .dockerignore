@@ -2,8 +2,6 @@
 .git/
 .github/
 .gitignore
-.agents/
-developing-with-streamlit
 
 # Python
 __pycache__/
@@ -23,6 +21,7 @@ ruff.toml
 # Arquivos de teste locais
 *.pdf
 !docs/**/*.pdf
+examples/
 
 # Sistema operacional / editores
 .DS_Store
