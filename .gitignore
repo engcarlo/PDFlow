@@ -6,9 +6,11 @@ __pycache__/
 venv/
 env/
 .ruff_cache/
+.agents/
 
 # Streamlit
 .streamlit/secrets.toml
+developing-with-streamlit
 
 # Arquivos de teste / uso local
 *.pdf
@@ -19,6 +21,5 @@ env/
 Thumbs.db
 .vscode/
 .idea/
+.old/
 .zip
-.txt
-.old

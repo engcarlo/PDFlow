@@ -27,6 +27,11 @@ pagina = st.sidebar.radio(
 st.sidebar.divider()
 st.sidebar.caption("Nenhum arquivo é salvo em servidor — o processamento acontece apenas na sessão atual.")
 
+# --- Banner de topo --------------------------------------------------------
+BANNER_PATH = Path(__file__).parent / "assets" / "banner.png"
+if BANNER_PATH.exists():
+    st.image(str(BANNER_PATH), width='stretch')
+
 
 # ===========================================================================
 # DESBLOQUEAR

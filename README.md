@@ -5,7 +5,7 @@ Aplicação web para manipulação de arquivos PDF — desbloquear, juntar e div
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.37%2B-red)
 ![License](https://img.shields.io/badge/license-MIT-green)
-[![CI](https://github.com/SEU-USUARIO/pdflow/actions/workflows/ci.yml/badge.svg)](https://github.com/SEU-USUARIO/pdflow/actions/workflows/ci.yml)
+[![CI](https://github.com/engcarlo/pdflow/actions/workflows/ci.yml/badge.svg)](https://github.com/engcarlo/pdflow/actions/workflows/ci.yml)
 
 ## 🎨 Identidade visual
 
@@ -19,7 +19,9 @@ O nome **PDFlow** remete ao fluxo entre as três funções do app — desbloquea
 | 🟩 Verde | Sucesso | `#3A9679` |
 | 🟥 Vermelho | Erro | `#C1493A` |
 
-Assets em [`assets/`](assets): `icon.svg` (vetor), `icon.png` (256×256) e `favicon-32.png`.
+Assets em [`assets/`](assets): `icon.svg`/`icon.png` (ícone do app), `favicon-32.png`, e `banner.svg`/`banner.png` (imagem de cabeçalho exibida no topo do app).
+
+<img src="assets/banner.png" alt="Banner do PDFlow" width="100%"/>
 
 ## 📸 Demonstração
 
@@ -135,9 +137,11 @@ pdflow/
 ├── docker-compose.yml      # Orquestração simplificada via Docker Compose
 ├── .dockerignore           # Arquivos excluídos da imagem Docker
 ├── assets/
-│   ├── icon.svg             # Logo/ícone em vetor
-│   ├── icon.png             # Logo/ícone em PNG (256×256)
-│   └── favicon-32.png       # Favicon em PNG (32×32)
+│   ├── icon.svg              # Ícone do app em vetor
+│   ├── icon.png              # Ícone do app em PNG (256×256)
+│   ├── favicon-32.png        # Favicon em PNG (32×32)
+│   ├── banner.svg            # Banner de cabeçalho em vetor
+│   └── banner.png            # Banner de cabeçalho em PNG
 ├── .streamlit/
 │   └── config.toml         # Tema visual do app
 ├── .github/
