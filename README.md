@@ -190,5 +190,5 @@ Este projeto está sob a licença MIT — veja o arquivo [LICENSE](LICENSE) para
 ## 👤 Autor
 
 **Seu Nome**
-- GitHub: [@seu-usuario](https://github.com/engcarlo)
-- LinkedIn: [seu-linkedin](https://linkedin.com/in/carlo-yukio-nunes)
+- GitHub: [@engcarlo](https://github.com/engcarlo)
+- LinkedIn: [carlo-yukio-nunes](https://linkedin.com/in/carlo-yukio-nunes)
